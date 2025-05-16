@@ -13,7 +13,7 @@ const (
 )
 
 type Player struct {
-	ID               string
+	ID               int
 	Resources        map[string]int
 	VictoryPoints    int
 	DevelopmentCards map[string]int
@@ -47,7 +47,7 @@ type CatanGame struct {
 	Bank      map[string]int
 }
 
-func NewCatanGame(playerIDs []string) *CatanGame {
+func NewCatanGame(playerIDs []int) *CatanGame {
 	players := make([]*Player, 0)
 	for _, id := range playerIDs {
 		players = append(players, &Player{
@@ -146,6 +146,10 @@ func GenerateBoard() *Board {
 	}
 
 	return board
+}
+
+func createPlayer(id int) Player {
+	return Player{ID: id, Resources: make(map[string]int), VictoryPoints: 0, DevelopmentCards: make(map[string]int)}
 }
 
 func shuffleSlice[T any](slice []T) {

@@ -1,9 +1,13 @@
 package main
 
-import "fmt"
-
 func main() {
-	fmt.Println("Welcome to Catan!\n")
 
-	printBoard(*GenerateBoard())
+	playerSlice := []int{1, 2, 3}
+	if cliGameInitialize() == 4 {
+		playerSlice = append(playerSlice, 4)
+	}
+
+	var game CatanGame = *NewCatanGame(playerSlice)
+	printBoard((*game.Board))
+
 }

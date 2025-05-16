@@ -32,6 +32,6 @@ func printBoard(board Board) {
 	fmt.Print(output)
 }
 
-func readInMove() {
+func readInInput() {
 
 }
