@@ -49,7 +49,8 @@ func gameStart(game *CatanGame) {
 	fmt.Println("Beginning setup phase...")
 
 	// Snake order placement (forward, then reverse)
-	PlaceStartingStructures(game, true)  // First round
+	PlaceStartingStructures(game, true) // First round
+
 	PlaceStartingStructures(game, false) // Second round
 
 	game.Phase = "main"
@@ -69,9 +70,32 @@ func PlaceStartingStructures(game *CatanGame, forward bool) {
 
 	for _, player := range playerOrder {
 		for {
+			printBoard(*game.Board)
+			fmt.Println("Available Settlement Locations:")
+			availableVerts := listAvailableSettlementVertices(game.Board.Graph)
+			for _, id := range availableVerts {
+				fmt.Println("- Vertex:", id)
+			}
 			fmt.Printf("Player %d: Enter settlement vertex key: ", player.ID)
 			vertexKey, _ := reader.ReadString('\n')
 			vertexKey = strings.TrimSpace(vertexKey)
+
+			vertexKey = strings.TrimSpace(vertexKey)
+
+			// Validate and retrieve the vertex
+			vertex, ok := game.Board.Graph.Vertices[vertexKey]
+			if !ok || vertex == nil {
+				fmt.Println("Invalid vertex key.")
+				continue
+			}
+
+			// List available road edges from that vertex
+			fmt.Println("Available Road Edges connected to this vertex:")
+			for _, edge := range vertex.Edges {
+				if edge != nil && edge.OccupiedBy == nil {
+					fmt.Printf("- Edge ID: %s (connects %s and %s)\n", edge.ID, edge.Vertices[0].ID, edge.Vertices[1].ID)
+				}
+			}
 
 			fmt.Printf("Player %d: Enter road edge key: ", player.ID)
 			edgeKey, _ := reader.ReadString('\n')
