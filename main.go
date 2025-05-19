@@ -6,8 +6,9 @@ func main() {
 	if cliGameInitialize() == 4 {
 		playerSlice = append(playerSlice, 4)
 	}
+	gameInitialize(len(playerSlice))
 
-	var game CatanGame = *NewCatanGame(playerSlice)
-	printBoard((*game.Board))
+	//var game CatanGame = *NewCatanGame(playerSlice)
+	//printBoard((*game.Board))
 
 }
