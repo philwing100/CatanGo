@@ -21,7 +21,7 @@ func spaces(n int) string {
 	return space
 }
 
-func rollDie() int {
+func RollDie() int {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return r.Intn(6) + 1
 }

@@ -1,0 +1,2 @@
+// apiGame.go
+package gameplay
