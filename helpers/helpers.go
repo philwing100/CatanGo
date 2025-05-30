@@ -25,3 +25,12 @@ func RollDie() int {
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	return r.Intn(6) + 1
 }
+
+func ContainsInt(slice []int, value int) bool {
+	for _, v := range slice {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}

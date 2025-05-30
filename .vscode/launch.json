@@ -6,7 +6,7 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}", // assumes all your .go files are in this folder
+      "program": "${workspaceFolder}/cmd/", // assumes all your .go files are in this folder
       "showLog": true
     }
   ]

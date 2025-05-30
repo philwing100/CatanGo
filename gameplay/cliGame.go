@@ -69,18 +69,38 @@ func (cps *CLIPlayerSelector) SelectStartingPlayer(game *CatanGame) *Player {
 
 func (cg *CLIGame) SnakeBuild(game *CatanGame, startingPlayer *Player, playerCount int) {
 	fmt.Println("\n=== Starting Build Phase ===")
-	order := GenerateSnakeOrder(startingPlayer.ID-1, playerCount)
+	order := GenerateSnakeOrder(game, startingPlayer, playerCount)
 
 	for _, playerID := range order {
 		player := game.Players[playerID]
 		PrintRaw(game)
-		fmt.Printf("Player %d's turn to select a settlement:\n", player.ID)
-		//Read in a vertex id
-		//call settlement build function on that vertex
+		var ValidVertices = ComputeValidVertexPlacements(game)
+		var vertexID1 int
+		var vertexID2 int
+
+		i := 0
+		for i < 1 {
+			vertexID1 = readInt(fmt.Sprintf("Enter the ID of the vertex where Player %d wants to build a settlement: ", player.ID))
+			if helpers.ContainsInt(ValidVertices, vertexID1) {
+				PlaceSettlement(vertexID1, player, game)
+				if player.VictoryPoints == 1 {
+					//if the player has one victory point at this point then they get their resources
+					for _, tileID := range GetVertexByID(game, vertexID1).TileIds {
+						BankToPlayerResource(game, player, GetTileByID(game, tileID).Resource, 1)
+					}
+				}
+				i++
+			}
+		}
 
 		fmt.Printf("Player %d's turn to select a road from that settlement", player.ID)
-		//Read in a vertex id
-		//call road build function no that vertex and the previous one
+		for i > 0 {
+			vertexID2 = readInt(fmt.Sprintf("Enter the ID of the vertex where Player %d wants to build a road: ", player.ID))
+			if helpers.ContainsInt(GetAdjacentVertices(vertexID1, game), vertexID2) {
+				PlaceRoad(vertexID1, vertexID2, player, game)
+				i--
+			}
+		}
 	}
 
 	fmt.Println("Snake building phase completed!")

@@ -13,6 +13,7 @@ type Player struct {
 	Resources        map[string]int
 	VictoryPoints    int
 	DevelopmentCards map[string]int
+	LongestRoad      int
 }
 
 type Tile struct {
@@ -36,8 +37,8 @@ type Edge struct {
 }
 
 type Graph struct {
-	Vertices map[string]*Vertex // key is a unique coord string
-	Edges    map[string]*Edge   // key is a unique coord string
+	Vertices map[int]*Vertex
+	Edges    map[string]*Edge
 }
 
 type Port struct {
@@ -158,61 +159,61 @@ func GenerateBoard() *Board {
 func GenerateGraphFromHardcodedData() *Graph {
 
 	// Hardcoded graph data for the Catan board according to image
-	vertices := map[string]*Vertex{
-		"1":  {ID: 1, AdjacentVertexes: [3]int{9, 2}, TileIds: [3]int{1}},
-		"2":  {ID: 2, AdjacentVertexes: [3]int{1, 3}, TileIds: [3]int{1}},
-		"3":  {ID: 3, AdjacentVertexes: [3]int{2, 4, 11}, TileIds: [3]int{1, 2}},
-		"4":  {ID: 4, AdjacentVertexes: [3]int{3, 5}, TileIds: [3]int{2}},
-		"5":  {ID: 5, AdjacentVertexes: [3]int{4, 6, 13}, TileIds: [3]int{2, 3}},
-		"6":  {ID: 6, AdjacentVertexes: [3]int{5, 7}, TileIds: [3]int{3}},
-		"7":  {ID: 7, AdjacentVertexes: [3]int{6, 15}, TileIds: [3]int{3}},
-		"8":  {ID: 8, AdjacentVertexes: [3]int{9, 18}, TileIds: [3]int{4}},
-		"9":  {ID: 9, AdjacentVertexes: [3]int{1, 8, 10}, TileIds: [3]int{1, 4}},
-		"10": {ID: 10, AdjacentVertexes: [3]int{9, 11, 20}, TileIds: [3]int{1, 4, 5}},
-		"11": {ID: 11, AdjacentVertexes: [3]int{3, 10, 12}, TileIds: [3]int{1, 2, 5}},
-		"12": {ID: 12, AdjacentVertexes: [3]int{11, 13, 22}, TileIds: [3]int{2, 5, 6}},
-		"13": {ID: 13, AdjacentVertexes: [3]int{5, 12, 14}, TileIds: [3]int{2, 3, 6}},
-		"14": {ID: 14, AdjacentVertexes: [3]int{13, 15, 24}, TileIds: [3]int{3, 6, 7}},
-		"15": {ID: 15, AdjacentVertexes: [3]int{7, 14, 16}, TileIds: [3]int{3, 7}},
-		"16": {ID: 16, AdjacentVertexes: [3]int{15, 26}, TileIds: [3]int{7}},
-		"17": {ID: 17, AdjacentVertexes: [3]int{18, 28}, TileIds: [3]int{8}},
-		"18": {ID: 18, AdjacentVertexes: [3]int{8, 17, 19}, TileIds: [3]int{4, 8}},
-		"19": {ID: 19, AdjacentVertexes: [3]int{18, 20, 30}, TileIds: [3]int{4, 8, 9}},
-		"20": {ID: 20, AdjacentVertexes: [3]int{10, 19, 21}, TileIds: [3]int{4, 5, 9}},
-		"21": {ID: 21, AdjacentVertexes: [3]int{20, 22, 32}, TileIds: [3]int{5, 9, 10}},
-		"22": {ID: 22, AdjacentVertexes: [3]int{12, 21, 23}, TileIds: [3]int{5, 6, 10}},
-		"23": {ID: 23, AdjacentVertexes: [3]int{22, 24, 34}, TileIds: [3]int{6, 10, 11}},
-		"24": {ID: 24, AdjacentVertexes: [3]int{14, 23, 25}, TileIds: [3]int{6, 7, 11}},
-		"25": {ID: 25, AdjacentVertexes: [3]int{24, 26, 36}, TileIds: [3]int{7, 11, 12}},
-		"26": {ID: 26, AdjacentVertexes: [3]int{16, 25, 27}, TileIds: [3]int{7, 12}},
-		"27": {ID: 27, AdjacentVertexes: [3]int{26, 38}, TileIds: [3]int{12}},
-		"28": {ID: 28, AdjacentVertexes: [3]int{17, 29}, TileIds: [3]int{8}},
-		"29": {ID: 29, AdjacentVertexes: [3]int{28, 30, 39}, TileIds: [3]int{8, 13}},
-		"30": {ID: 30, AdjacentVertexes: [3]int{19, 29, 31}, TileIds: [3]int{8, 9, 13}},
-		"31": {ID: 31, AdjacentVertexes: [3]int{30, 32, 41}, TileIds: [3]int{9, 13, 14}},
-		"32": {ID: 32, AdjacentVertexes: [3]int{21, 31, 33}, TileIds: [3]int{9, 10, 14}},
-		"33": {ID: 33, AdjacentVertexes: [3]int{32, 34, 43}, TileIds: [3]int{10, 14, 15}},
-		"34": {ID: 34, AdjacentVertexes: [3]int{23, 33, 35}, TileIds: [3]int{10, 11, 15}},
-		"35": {ID: 35, AdjacentVertexes: [3]int{34, 36, 45}, TileIds: [3]int{11, 15, 16}},
-		"36": {ID: 36, AdjacentVertexes: [3]int{25, 35, 37}, TileIds: [3]int{11, 12, 16}},
-		"37": {ID: 37, AdjacentVertexes: [3]int{36, 38, 47}, TileIds: [3]int{12, 16}},
-		"38": {ID: 38, AdjacentVertexes: [3]int{27, 37}, TileIds: [3]int{12}},
-		"39": {ID: 39, AdjacentVertexes: [3]int{29, 40}, TileIds: [3]int{13}},
-		"40": {ID: 40, AdjacentVertexes: [3]int{39, 41, 48}, TileIds: [3]int{13, 17}},
-		"41": {ID: 41, AdjacentVertexes: [3]int{31, 40, 42}, TileIds: [3]int{13, 14, 17}},
-		"42": {ID: 42, AdjacentVertexes: [3]int{41, 43, 50}, TileIds: [3]int{14, 17, 18}},
-		"43": {ID: 43, AdjacentVertexes: [3]int{33, 42, 44}, TileIds: [3]int{14, 15, 18}},
-		"44": {ID: 44, AdjacentVertexes: [3]int{43, 45, 52}, TileIds: [3]int{15, 18, 19}},
-		"45": {ID: 45, AdjacentVertexes: [3]int{35, 44, 46}, TileIds: [3]int{15, 16, 19}},
-		"46": {ID: 46, AdjacentVertexes: [3]int{45, 47, 54}, TileIds: [3]int{16, 19}},
-		"47": {ID: 47, AdjacentVertexes: [3]int{37, 46}, TileIds: [3]int{16}},
-		"48": {ID: 48, AdjacentVertexes: [3]int{40, 49}, TileIds: [3]int{17}},
-		"49": {ID: 49, AdjacentVertexes: [3]int{48, 50}, TileIds: [3]int{17}},
-		"50": {ID: 50, AdjacentVertexes: [3]int{42, 49, 51}, TileIds: [3]int{17, 18}},
-		"51": {ID: 51, AdjacentVertexes: [3]int{50, 52}, TileIds: [3]int{18}},
-		"52": {ID: 52, AdjacentVertexes: [3]int{44, 51, 53}, TileIds: [3]int{18, 19}},
-		"53": {ID: 53, AdjacentVertexes: [3]int{52, 54}, TileIds: [3]int{19}},
-		"54": {ID: 54, AdjacentVertexes: [3]int{46, 53}, TileIds: [3]int{19}},
+	vertices := map[int]*Vertex{
+		1:  {ID: 1, AdjacentVertexes: [3]int{9, 2}, TileIds: [3]int{1}},
+		2:  {ID: 2, AdjacentVertexes: [3]int{1, 3}, TileIds: [3]int{1}},
+		3:  {ID: 3, AdjacentVertexes: [3]int{2, 4, 11}, TileIds: [3]int{1, 2}},
+		4:  {ID: 4, AdjacentVertexes: [3]int{3, 5}, TileIds: [3]int{2}},
+		5:  {ID: 5, AdjacentVertexes: [3]int{4, 6, 13}, TileIds: [3]int{2, 3}},
+		6:  {ID: 6, AdjacentVertexes: [3]int{5, 7}, TileIds: [3]int{3}},
+		7:  {ID: 7, AdjacentVertexes: [3]int{6, 15}, TileIds: [3]int{3}},
+		8:  {ID: 8, AdjacentVertexes: [3]int{9, 18}, TileIds: [3]int{4}},
+		9:  {ID: 9, AdjacentVertexes: [3]int{1, 8, 10}, TileIds: [3]int{1, 4}},
+		10: {ID: 10, AdjacentVertexes: [3]int{9, 11, 20}, TileIds: [3]int{1, 4, 5}},
+		11: {ID: 11, AdjacentVertexes: [3]int{3, 10, 12}, TileIds: [3]int{1, 2, 5}},
+		12: {ID: 12, AdjacentVertexes: [3]int{11, 13, 22}, TileIds: [3]int{2, 5, 6}},
+		13: {ID: 13, AdjacentVertexes: [3]int{5, 12, 14}, TileIds: [3]int{2, 3, 6}},
+		14: {ID: 14, AdjacentVertexes: [3]int{13, 15, 24}, TileIds: [3]int{3, 6, 7}},
+		15: {ID: 15, AdjacentVertexes: [3]int{7, 14, 16}, TileIds: [3]int{3, 7}},
+		16: {ID: 16, AdjacentVertexes: [3]int{15, 26}, TileIds: [3]int{7}},
+		17: {ID: 17, AdjacentVertexes: [3]int{18, 28}, TileIds: [3]int{8}},
+		18: {ID: 18, AdjacentVertexes: [3]int{8, 17, 19}, TileIds: [3]int{4, 8}},
+		19: {ID: 19, AdjacentVertexes: [3]int{18, 20, 30}, TileIds: [3]int{4, 8, 9}},
+		20: {ID: 20, AdjacentVertexes: [3]int{10, 19, 21}, TileIds: [3]int{4, 5, 9}},
+		21: {ID: 21, AdjacentVertexes: [3]int{20, 22, 32}, TileIds: [3]int{5, 9, 10}},
+		22: {ID: 22, AdjacentVertexes: [3]int{12, 21, 23}, TileIds: [3]int{5, 6, 10}},
+		23: {ID: 23, AdjacentVertexes: [3]int{22, 24, 34}, TileIds: [3]int{6, 10, 11}},
+		24: {ID: 24, AdjacentVertexes: [3]int{14, 23, 25}, TileIds: [3]int{6, 7, 11}},
+		25: {ID: 25, AdjacentVertexes: [3]int{24, 26, 36}, TileIds: [3]int{7, 11, 12}},
+		26: {ID: 26, AdjacentVertexes: [3]int{16, 25, 27}, TileIds: [3]int{7, 12}},
+		27: {ID: 27, AdjacentVertexes: [3]int{26, 38}, TileIds: [3]int{12}},
+		28: {ID: 28, AdjacentVertexes: [3]int{17, 29}, TileIds: [3]int{8}},
+		29: {ID: 29, AdjacentVertexes: [3]int{28, 30, 39}, TileIds: [3]int{8, 13}},
+		30: {ID: 30, AdjacentVertexes: [3]int{19, 29, 31}, TileIds: [3]int{8, 9, 13}},
+		31: {ID: 31, AdjacentVertexes: [3]int{30, 32, 41}, TileIds: [3]int{9, 13, 14}},
+		32: {ID: 32, AdjacentVertexes: [3]int{21, 31, 33}, TileIds: [3]int{9, 10, 14}},
+		33: {ID: 33, AdjacentVertexes: [3]int{32, 34, 43}, TileIds: [3]int{10, 14, 15}},
+		34: {ID: 34, AdjacentVertexes: [3]int{23, 33, 35}, TileIds: [3]int{10, 11, 15}},
+		35: {ID: 35, AdjacentVertexes: [3]int{34, 36, 45}, TileIds: [3]int{11, 15, 16}},
+		36: {ID: 36, AdjacentVertexes: [3]int{25, 35, 37}, TileIds: [3]int{11, 12, 16}},
+		37: {ID: 37, AdjacentVertexes: [3]int{36, 38, 47}, TileIds: [3]int{12, 16}},
+		38: {ID: 38, AdjacentVertexes: [3]int{27, 37}, TileIds: [3]int{12}},
+		39: {ID: 39, AdjacentVertexes: [3]int{29, 40}, TileIds: [3]int{13}},
+		40: {ID: 40, AdjacentVertexes: [3]int{39, 41, 48}, TileIds: [3]int{13, 17}},
+		41: {ID: 41, AdjacentVertexes: [3]int{31, 40, 42}, TileIds: [3]int{13, 14, 17}},
+		42: {ID: 42, AdjacentVertexes: [3]int{41, 43, 50}, TileIds: [3]int{14, 17, 18}},
+		43: {ID: 43, AdjacentVertexes: [3]int{33, 42, 44}, TileIds: [3]int{14, 15, 18}},
+		44: {ID: 44, AdjacentVertexes: [3]int{43, 45, 52}, TileIds: [3]int{15, 18, 19}},
+		45: {ID: 45, AdjacentVertexes: [3]int{35, 44, 46}, TileIds: [3]int{15, 16, 19}},
+		46: {ID: 46, AdjacentVertexes: [3]int{45, 47, 54}, TileIds: [3]int{16, 19}},
+		47: {ID: 47, AdjacentVertexes: [3]int{37, 46}, TileIds: [3]int{16}},
+		48: {ID: 48, AdjacentVertexes: [3]int{40, 49}, TileIds: [3]int{17}},
+		49: {ID: 49, AdjacentVertexes: [3]int{48, 50}, TileIds: [3]int{17}},
+		50: {ID: 50, AdjacentVertexes: [3]int{42, 49, 51}, TileIds: [3]int{17, 18}},
+		51: {ID: 51, AdjacentVertexes: [3]int{50, 52}, TileIds: [3]int{18}},
+		52: {ID: 52, AdjacentVertexes: [3]int{44, 51, 53}, TileIds: [3]int{18, 19}},
+		53: {ID: 53, AdjacentVertexes: [3]int{52, 54}, TileIds: [3]int{19}},
+		54: {ID: 54, AdjacentVertexes: [3]int{46, 53}, TileIds: [3]int{19}},
 	}
 
 	edges := map[string]*Edge{}

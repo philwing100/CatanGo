@@ -22,6 +22,23 @@ func colorText(text string, playerID int) string {
 	return playerColors[playerID-1] + text + resetColor
 }
 
+// reads int until a valid int is entered
+func readInt(prompt string) int {
+	var input int
+	for {
+		fmt.Print(prompt)
+		_, err := fmt.Scanln(&input)
+		if err != nil {
+			fmt.Println("Invalid input. Please enter a valid number.")
+			// Clear input buffer
+			var discard string
+			fmt.Scanln(&discard)
+			continue
+		}
+		return input
+	}
+}
+
 // Print the raw contents of the board
 func PrintRaw(game *CatanGame) {
 	fmt.Println("===== CATAN GAME STATE =====\n")
@@ -155,7 +172,7 @@ func printVertexRow(game *CatanGame, vertexIDs []int, portInfo map[int]string, r
 	line2 := ""
 
 	for _, id := range vertexIDs {
-		vertex := game.Board.Graph.Vertices[fmt.Sprintf("%d", id)]
+		vertex := game.Board.Graph.Vertices[id]
 		player := "0"
 		building := " "
 		port := " "
