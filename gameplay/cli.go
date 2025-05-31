@@ -22,21 +22,11 @@ func colorText(text string, playerID int) string {
 	return playerColors[playerID-1] + text + resetColor
 }
 
-// reads int until a valid int is entered
-func readInt(prompt string) int {
-	var input int
-	for {
-		fmt.Print(prompt)
-		_, err := fmt.Scanln(&input)
-		if err != nil {
-			fmt.Println("Invalid input. Please enter a valid number.")
-			// Clear input buffer
-			var discard string
-			fmt.Scanln(&discard)
-			continue
-		}
-		return input
-	}
+func (cg *CLIGame) readInt(prompt string) int {
+	fmt.Print(prompt)
+	var num int
+	fmt.Fscanln(cg.Input, &num)
+	return num
 }
 
 // Print the raw contents of the board

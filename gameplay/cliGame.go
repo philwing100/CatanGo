@@ -5,17 +5,18 @@ import (
 	"bufio"
 	"catango/helpers"
 	"fmt"
-	"os"
+	"io"
 	"strconv"
 	"strings"
 )
 
 type CLIGame struct {
-	BaseGame // Embed the base implementation
+	BaseGame
+	Input io.Reader // Injected input source
 }
 
 func (cg *CLIGame) Initialize() int {
-	reader := bufio.NewReader(os.Stdin)
+	reader := bufio.NewReader(cg.Input)
 
 	for {
 		fmt.Println("Welcome to Catan!")
@@ -41,7 +42,7 @@ func (cg *CLIGame) Initialize() int {
 func (cg *CLIGame) Start(game *CatanGame) {
 	fmt.Println("Game is starting!")
 	fmt.Println("Current Phase:", game.Phase)
-	PrintGameBoard(game)
+	//PrintGameBoard(game)
 	cg.BaseGame.Start(game) // Call base implementation
 	fmt.Println("Game phase set to:", game.Phase)
 }
@@ -50,8 +51,8 @@ type CLIPlayerSelector struct {
 	BasePlayerSelector // Embed the base implementation
 }
 
-func (cps *CLIPlayerSelector) SelectStartingPlayer(game *CatanGame) *Player {
-	reader := bufio.NewReader(os.Stdin)
+func (cps *CLIPlayerSelector) SelectStartingPlayer(game *CatanGame, r io.Reader) *Player {
+	reader := bufio.NewReader(r)
 
 	rollFunc := func(player *Player) int {
 		fmt.Printf("Player %d, press ENTER to roll the die...", player.ID)
@@ -80,7 +81,7 @@ func (cg *CLIGame) SnakeBuild(game *CatanGame, startingPlayer *Player, playerCou
 
 		i := 0
 		for i < 1 {
-			vertexID1 = readInt(fmt.Sprintf("Enter the ID of the vertex where Player %d wants to build a settlement: ", player.ID))
+			vertexID1 = cg.readInt(fmt.Sprintf("Enter the ID of the vertex where Player %d wants to build a settlement: ", player.ID))
 			if helpers.ContainsInt(ValidVertices, vertexID1) {
 				PlaceSettlement(vertexID1, player, game)
 				if player.VictoryPoints == 1 {
@@ -95,7 +96,7 @@ func (cg *CLIGame) SnakeBuild(game *CatanGame, startingPlayer *Player, playerCou
 
 		fmt.Printf("Player %d's turn to select a road from that settlement", player.ID)
 		for i > 0 {
-			vertexID2 = readInt(fmt.Sprintf("Enter the ID of the vertex where Player %d wants to build a road: ", player.ID))
+			vertexID2 = cg.readInt(fmt.Sprintf("Enter the ID of the vertex where Player %d wants to build a road: ", player.ID))
 			if helpers.ContainsInt(GetAdjacentVertices(vertexID1, game), vertexID2) {
 				PlaceRoad(vertexID1, vertexID2, player, game)
 				i--
