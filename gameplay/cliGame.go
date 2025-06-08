@@ -94,9 +94,8 @@ func (cg *CLIGame) SnakeBuild(game *CatanGame, startingPlayer *Player, playerCou
 			}
 		}
 
-		fmt.Printf("Player %d's turn to select a road from that settlement", player.ID)
 		for i > 0 {
-			vertexID2 = cg.readInt(fmt.Sprintf("Enter the ID of the vertex where Player %d wants to build a road: ", player.ID))
+			vertexID2 = cg.readInt(fmt.Sprintf("Enter the ID of the vertex where Player %d wants to build a road from that settlement: ", player.ID))
 			if helpers.ContainsInt(GetAdjacentVertices(vertexID1, game), vertexID2) {
 				PlaceRoad(vertexID1, vertexID2, player, game)
 				i--

@@ -6,8 +6,11 @@
       "type": "go",
       "request": "launch",
       "mode": "auto",
-      "program": "${workspaceFolder}/cmd/", // assumes all your .go files are in this folder
-      "showLog": true
+      "program": "${workspaceFolder}/cmd",
+      "showLog": true,
+      "env": {
+        "DEBUG_MODE": "true"
+      }
     }
   ]
 }

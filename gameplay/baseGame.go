@@ -26,31 +26,35 @@ type BasePlayerSelector struct{}
 type DiceRollFunc func(player *Player) int
 
 func (bps *BasePlayerSelector) SelectStartingPlayer(game *CatanGame, roll DiceRollFunc) *Player {
-	for len(game.Players) > 1 {
+	// Use a local copy to find the starting player
+	contenders := game.Players
+
+	for len(contenders) > 1 {
 		currentRolls := make(map[int]int)
 
-		for i, player := range game.Players {
+		for i, player := range contenders {
 			currentRolls[i] = roll(player)
 		}
 
 		maxRoll := -1
-		for _, roll := range currentRolls {
-			if roll > maxRoll {
-				maxRoll = roll
+		for _, r := range currentRolls {
+			if r > maxRoll {
+				maxRoll = r
 			}
 		}
 
-		var remainingPlayers []*Player
-		for i, roll := range currentRolls {
-			if roll == maxRoll {
-				remainingPlayers = append(remainingPlayers, game.Players[i])
+		var nextRound []*Player
+		for i, r := range currentRolls {
+			if r == maxRoll {
+				nextRound = append(nextRound, contenders[i])
 			}
 		}
 
-		game.Players = remainingPlayers
+		contenders = nextRound // Only update the local contenders slice
 	}
 
-	return game.Players[0]
+	// Do not mutate game.Players
+	return contenders[0]
 }
 
 func GenerateSnakeOrder(game *CatanGame, startingPlayer *Player, totalPlayers int) []int {
@@ -77,7 +81,7 @@ func GenerateSnakeOrder(game *CatanGame, startingPlayer *Player, totalPlayers in
 	}
 
 	for i := totalPlayers - 1; i >= 0; i-- {
-		order = append(order, i)
+		order = append(order, order[i])
 	}
 	fmt.Printf("%v", order)
 
